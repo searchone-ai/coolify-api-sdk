@@ -1,0 +1,43 @@
+{
+    "name": "@searchone/coolify-api-sdk",
+    "version": "1.0.0",
+    "description": "SDK for Coolify's api, typesafe and validated",
+    "license": "MIT",
+    "author": "Shanyu Thibaut Juneja",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/searchone-ai/coolify-api-sdk"
+    },
+    "homepage": "https://github.com/searchone-ai/coolify-api-sdk",
+    "bugs": {
+        "url": "https://github.com/searchone-ai/coolify-api-sdk/issues"
+    },
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "clean": "rm -rf dist",
+        "test": "vitest",
+        "test:watch": "vitest --watch",
+        "test:coverage": "vitest --coverage",
+        "prepublishOnly": "npm run clean && npm run build",
+        "publish": "npm run build && npm publish --access public"
+    },
+    "dependencies": {
+        "zod": "^3.22.4"
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.0",
+        "@vitest/coverage-v8": "^1.0.0",
+        "typescript": "^5.3.0",
+        "vitest": "^1.0.0"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}
