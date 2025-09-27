@@ -1,7 +1,7 @@
 {
     "validDeployment": {
         "id": 1,
-        "uuid": "550e8400-e29b-41d4-a716-446655440020",
+        "uuid": "k8s0w4g0sgc4wk8ggc0s8w4o",
         "status": "running",
         "application_id": 1,
         "application_name": "My Test App",

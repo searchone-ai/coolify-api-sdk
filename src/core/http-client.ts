@@ -50,15 +50,31 @@ export class HttpClient {
 
             if (!response.ok) {
                 throw new CoolifyApiError({
-                    message: responseData.message || `HTTP ${response.status}: ${response.statusText}`,
+                    message: responseData.message + JSON.stringify(responseData) || `HTTP ${response.status}: ${response.statusText}`,
                     status: response.status,
                     details: responseData,
                 });
             }
 
-            const validatedData = responseSchema
-                ? responseSchema.parse(responseData)
-                : responseData as T;
+            let validatedData: T;
+            if (responseSchema) {
+                try {
+                    validatedData = responseSchema.parse(responseData);
+                } catch (validationError) {
+                    if (validationError instanceof z.ZodError) {
+                        console.warn('Response validation failed:', {
+                            path: requestConfig.path,
+                            method: requestConfig.method,
+                            issues: validationError.issues,
+                        });
+                    } else {
+                        console.warn('Response validation failed with unexpected error:', validationError);
+                    }
+                    validatedData = responseData as T;
+                }
+            } else {
+                validatedData = responseData as T;
+            }
 
             return {
                 data: validatedData,
@@ -73,13 +89,6 @@ export class HttpClient {
                 throw error;
             }
 
-            if (error instanceof z.ZodError) {
-                throw new CoolifyApiError({
-                    message: 'Invalid response format from API',
-                    status: 422,
-                    details: error.errors,
-                });
-            }
 
             if (error instanceof Error) {
                 if (error.name === 'AbortError') {
@@ -159,9 +168,16 @@ export class HttpClient {
     }
 
     private buildUrl(path: string, query?: Record<string, unknown>): string {
-        const baseUrl = this.config.baseUrl.replace(/\/$/, '');
-        const cleanPath = path.startsWith('/') ? path : `/${path}`;
-        const url = new URL(`${baseUrl}${cleanPath}`);
+        let url: URL;
+        const baseUrl = this.config.baseUrl;
+        console.log('baseUrl', baseUrl);
+        try {
+            const cleanPath = path.startsWith('/') ? path : `/${path}`;
+            url = new URL(`${baseUrl}${cleanPath}`);
+        } catch (error) {
+            console.error('Error building URL with path:', (baseUrl + path), 'and query:', query, error);
+            throw Error('Error building URL with path: ' + baseUrl + path + ' and query: ' + query);
+        }
 
         if (query) {
             Object.entries(query).forEach(([key, value]) => {

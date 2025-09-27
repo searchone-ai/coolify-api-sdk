@@ -1,7 +1,7 @@
 {
     "validDatabase": {
         "id": 1,
-        "uuid": "550e8400-e29b-41d4-a716-446655440010",
+        "uuid": "xg0ccwgksgookogcg8s4w44o",
         "name": "My Test Database",
         "description": "A test PostgreSQL database",
         "image": "postgres:15",

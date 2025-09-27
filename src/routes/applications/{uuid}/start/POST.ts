@@ -1,24 +1,36 @@
 import { z } from 'zod';
 import { BaseRoute, RouteConfig } from '../../../../core/route-interface.js';
 import { UuidSchema } from '../../schemas.js';
-import { BaseResponseSchema } from '../../../../core/types.js';
+
+/**
+ * Request parameters schema
+ */
+const StartApplicationParamsSchema = z.object({
+    uuid: UuidSchema.refine(val => val, { message: "Application UUID is required and must be a valid UUID" })
+});
+
+/**
+ * Response schema for starting application
+ */
+const StartApplicationResponseSchema = z.object({
+    message: z.string(),
+    deployment_uuid: z.string()
+});
 
 /**
  * POST /applications/{uuid}/start - Start application
  */
 export class StartApplicationRoute extends BaseRoute {
     private readonly config: RouteConfig<
-        { uuid: string },
+        z.infer<typeof StartApplicationParamsSchema>,
         {},
         {},
-        z.infer<typeof BaseResponseSchema>
+        z.infer<typeof StartApplicationResponseSchema>
     > = {
-            method: 'POST',
+            method: 'POST' as const,
             path: '/applications/{uuid}/start',
-            paramsSchema: z.object({
-                uuid: UuidSchema.refine(val => val, { message: "Application UUID is required and must be a valid UUID" })
-            }),
-            responseSchema: BaseResponseSchema
+            paramsSchema: StartApplicationParamsSchema,
+            responseSchema: StartApplicationResponseSchema
         };
 
     /**
@@ -30,3 +42,7 @@ export class StartApplicationRoute extends BaseRoute {
         return this.executeRoute(this.config, input);
     }
 }
+
+// Export types for external use
+export type StartApplicationParams = z.infer<typeof StartApplicationParamsSchema>;
+export type StartApplicationResponse = z.infer<typeof StartApplicationResponseSchema>;

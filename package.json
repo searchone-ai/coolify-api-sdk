@@ -1,6 +1,6 @@
 {
     "name": "@searchone/coolify-api-sdk",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "description": "SDK for Coolify's api, typesafe and validated",
     "license": "MIT",
     "author": "Shanyu Thibaut Juneja",

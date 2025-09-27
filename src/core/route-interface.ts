@@ -94,6 +94,51 @@ export abstract class BaseRoute {
     }
 
     /**
+     * Execute a route with direct data input (no body nesting)
+     */
+    protected async executeRouteWithData<
+        TParams extends Record<string, unknown>,
+        TQuery extends Record<string, unknown>,
+        TBody,
+        TResponse
+    >(
+        config: RouteConfig<TParams, TQuery, TBody, TResponse>,
+        data?: TBody,
+        params?: TParams,
+        query?: TQuery,
+        options?: { headers?: Record<string, string>; timeout?: number }
+    ): Promise<ApiResponse<TResponse>> {
+        // Validate input parameters
+        const validatedParams = config.paramsSchema
+            ? config.paramsSchema.parse(params || {})
+            : (params as TParams);
+
+        const validatedQuery = config.querySchema
+            ? config.querySchema.parse(query || {})
+            : (query as TQuery);
+
+        const validatedBody = config.bodySchema && data !== undefined
+            ? config.bodySchema.parse(data)
+            : (data as TBody);
+
+        // Build the final path by replacing parameters
+        const finalPath = this.buildPath(config.path, validatedParams);
+
+        // Make the HTTP request
+        return this.httpClient.request(
+            {
+                method: config.method,
+                path: finalPath,
+                ...(Object.keys(validatedQuery || {}).length > 0 && { query: validatedQuery }),
+                ...(validatedBody !== undefined && { body: validatedBody }),
+                ...(options?.headers !== undefined && { headers: options.headers }),
+                ...(options?.timeout !== undefined && { timeout: options.timeout }),
+            },
+            config.responseSchema
+        );
+    }
+
+    /**
      * Build the final path by replacing parameter placeholders
      */
     private buildPath(pathTemplate: string, params: Record<string, unknown>): string {

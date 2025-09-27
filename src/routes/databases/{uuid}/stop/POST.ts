@@ -4,20 +4,25 @@ import { UuidSchema } from '../../schemas.js';
 import { BaseResponseSchema } from '../../../../core/types.js';
 
 /**
+ * Request parameters schema
+ */
+const StopDatabaseParamsSchema = z.object({
+    uuid: UuidSchema.refine(val => val, { message: "Database UUID is required and must be a valid UUID" })
+});
+
+/**
  * POST /databases/{uuid}/stop - Stop database
  */
 export class StopDatabaseRoute extends BaseRoute {
     private readonly config: RouteConfig<
-        { uuid: string },
+        z.infer<typeof StopDatabaseParamsSchema>,
         {},
         {},
         z.infer<typeof BaseResponseSchema>
     > = {
-            method: 'POST',
+            method: 'POST' as const,
             path: '/databases/{uuid}/stop',
-            paramsSchema: z.object({
-                uuid: UuidSchema.refine(val => val, { message: "Database UUID is required and must be a valid UUID" })
-            }),
+            paramsSchema: StopDatabaseParamsSchema,
             responseSchema: BaseResponseSchema
         };
 
@@ -30,3 +35,6 @@ export class StopDatabaseRoute extends BaseRoute {
         return this.executeRoute(this.config, input);
     }
 }
+
+// Export types for external use
+export type StopDatabaseParams = z.infer<typeof StopDatabaseParamsSchema>;

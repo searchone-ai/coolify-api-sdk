@@ -10,9 +10,10 @@ import { CreateDockerfileApplicationRoute } from './dockerfile/POST.js';
 import { CreateDockerImageApplicationRoute } from './dockerimage/POST.js';
 import { CreateDockerComposeApplicationRoute } from './dockercompose/POST.js';
 import { GetApplicationRoute } from './{uuid}/GET.js';
+import { DeleteApplicationRoute } from './{uuid}/DELETE.js';
 import { GetApplicationLogsRoute } from './{uuid}/logs/GET.js';
 import { GetApplicationEnvironmentVariablesRoute } from './{uuid}/envs/GET.js';
-import { CreateBulkApplicationEnvironmentVariablesRoute } from './{uuid}/envs/bulk/POST.js';
+import { CreateBulkApplicationEnvironmentVariablesRoute } from './{uuid}/envs/bulk/PATCH.js';
 import { GetApplicationEnvironmentVariableRoute } from './{uuid}/envs/{env_uuid}/GET.js';
 import { UpdateApplicationEnvironmentVariableRoute } from './{uuid}/envs/{env_uuid}/PATCH.js';
 import { DeleteApplicationEnvironmentVariableRoute } from './{uuid}/envs/{env_uuid}/DELETE.js';
@@ -32,6 +33,7 @@ export class ApplicationsRoute {
     private createDockerImageApplicationRoute?: CreateDockerImageApplicationRoute;
     private createDockerComposeApplicationRoute?: CreateDockerComposeApplicationRoute;
     private getApplicationRoute?: GetApplicationRoute;
+    private deleteApplicationRoute?: DeleteApplicationRoute;
     private getApplicationLogsRoute?: GetApplicationLogsRoute;
     private getApplicationEnvironmentVariablesRoute?: GetApplicationEnvironmentVariablesRoute;
     private createBulkApplicationEnvironmentVariablesRoute?: CreateBulkApplicationEnvironmentVariablesRoute;
@@ -55,6 +57,7 @@ export class ApplicationsRoute {
         this.createDockerImageApplicationRoute = new CreateDockerImageApplicationRoute(this.httpClient);
         this.createDockerComposeApplicationRoute = new CreateDockerComposeApplicationRoute(this.httpClient);
         this.getApplicationRoute = new GetApplicationRoute(this.httpClient);
+        this.deleteApplicationRoute = new DeleteApplicationRoute(this.httpClient);
         this.getApplicationLogsRoute = new GetApplicationLogsRoute(this.httpClient);
         this.getApplicationEnvironmentVariablesRoute = new GetApplicationEnvironmentVariablesRoute(this.httpClient);
         this.createBulkApplicationEnvironmentVariablesRoute = new CreateBulkApplicationEnvironmentVariablesRoute(this.httpClient);
@@ -126,6 +129,11 @@ export class ApplicationsRoute {
             details: () => this.getApplicationRoute!.execute({ params: { uuid } }),
 
             /**
+             * Delete application
+             */
+            delete: () => this.deleteApplicationRoute!.execute({ params: { uuid } }),
+
+            /**
              * Get application logs
              */
             logs: () => this.getApplicationLogsRoute!.execute({ params: { uuid } }),
@@ -142,8 +150,8 @@ export class ApplicationsRoute {
                 /**
                  * Create multiple environment variables
                  */
-                createBulk: (input: { body: Parameters<CreateBulkApplicationEnvironmentVariablesRoute['execute']>[0]['body'] }) =>
-                    this.createBulkApplicationEnvironmentVariablesRoute!.execute({ params: { uuid }, body: input.body }),
+                createBulk: (data: Parameters<CreateBulkApplicationEnvironmentVariablesRoute['execute']>[0]['body']['data']) =>
+                    this.createBulkApplicationEnvironmentVariablesRoute!.execute({ params: { uuid }, body: { data } }),
 
                 /**
                  * Get specific environment variable

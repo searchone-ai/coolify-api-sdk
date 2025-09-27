@@ -1,7 +1,7 @@
 {
     "validApplication": {
         "id": 1,
-        "uuid": "550e8400-e29b-41d4-a716-446655440000",
+        "uuid": "o0sgcw408s848kkoggsgw0ss",
         "name": "My Test App",
         "description": "A test application",
         "repository_project_id": 123,
@@ -76,7 +76,7 @@
     },
     "validEnvironmentVariable": {
         "id": 1,
-        "uuid": "550e8400-e29b-41d4-a716-446655440004",
+        "uuid": "jos8g0gwgkcg8w8s0ocw84s0",
         "key": "NODE_ENV",
         "value": "production",
         "is_preview": false,
@@ -104,5 +104,27 @@
     "invalidBulkEnvironmentVariables": [{
         "key": "",
         "value": "production"
-    }]
+    }],
+    "validCreatePrivateGithubAppRequest": {
+        "project_uuid": "p0sgcw408s848kkoggsgw0ss",
+        "server_uuid": "s0sgcw408s848kkoggsgw0ss",
+        "environment_name": "production",
+        "environment_uuid": "e0sgcw408s848kkoggsgw0ss",
+        "git_repository": "searchone-ai/mvp2-proxy",
+        "git_branch": "main",
+        "build_pack": "nixpacks",
+        "ports_exposes": "3000",
+        "github_app_uuid": "g0sgcw408s848kkoggsgw0ss"
+    },
+    "invalidCreatePrivateGithubAppRequest": {
+        "project_uuid": "invalid-uuid",
+        "server_uuid": "",
+        "environment_name": "",
+        "environment_uuid": "not-a-uuid",
+        "git_repository": "https://github.com/user/repo.git",
+        "git_branch": "",
+        "build_pack": "invalid-pack",
+        "ports_exposes": "",
+        "github_app_uuid": "invalid-github-app-uuid"
+    }
 }

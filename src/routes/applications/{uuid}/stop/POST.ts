@@ -4,20 +4,25 @@ import { UuidSchema } from '../../schemas.js';
 import { BaseResponseSchema } from '../../../../core/types.js';
 
 /**
+ * Request parameters schema
+ */
+const StopApplicationParamsSchema = z.object({
+    uuid: UuidSchema.refine(val => val, { message: "Application UUID is required and must be a valid UUID" })
+});
+
+/**
  * POST /applications/{uuid}/stop - Stop application
  */
 export class StopApplicationRoute extends BaseRoute {
     private readonly config: RouteConfig<
-        { uuid: string },
+        z.infer<typeof StopApplicationParamsSchema>,
         {},
         {},
         z.infer<typeof BaseResponseSchema>
     > = {
-            method: 'POST',
+            method: 'POST' as const,
             path: '/applications/{uuid}/stop',
-            paramsSchema: z.object({
-                uuid: UuidSchema.refine(val => val, { message: "Application UUID is required and must be a valid UUID" })
-            }),
+            paramsSchema: StopApplicationParamsSchema,
             responseSchema: BaseResponseSchema
         };
 
@@ -30,3 +35,6 @@ export class StopApplicationRoute extends BaseRoute {
         return this.executeRoute(this.config, input);
     }
 }
+
+// Export types for external use
+export type StopApplicationParams = z.infer<typeof StopApplicationParamsSchema>;

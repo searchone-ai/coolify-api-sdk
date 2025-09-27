@@ -134,19 +134,27 @@ export function assertValidationError(error: any, expectedMessages: string[]): v
 }
 
 /**
- * Create a UUID for testing
+ * Create a UUID for testing (24-character format)
  */
 export function createTestUuid(): string {
-    return '550e8400-e29b-41d4-a716-446655440000';
+    return 'o0sgcw408s848kkoggsgw0ss';
 }
 
 /**
- * Create multiple test UUIDs
+ * Create multiple test UUIDs (24-character format)
  */
 export function createTestUuids(count: number): string[] {
     const uuids: string[] = [];
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+
     for (let i = 0; i < count; i++) {
-        const uuid = `550e8400-e29b-41d4-a716-44665544${i.toString().padStart(4, '0')}`;
+        let uuid = '';
+        for (let j = 0; j < 24; j++) {
+            uuid += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        // Ensure uniqueness by appending the index in a deterministic way
+        const indexStr = i.toString(36).padStart(4, '0');
+        uuid = uuid.substring(0, 20) + indexStr;
         uuids.push(uuid);
     }
     return uuids;

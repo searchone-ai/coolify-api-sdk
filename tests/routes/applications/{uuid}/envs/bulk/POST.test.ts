@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { CreateBulkApplicationEnvironmentVariablesRoute } from '../../../../../../src/routes/applications/{uuid}/envs/bulk/POST.js';
+import { CreateBulkApplicationEnvironmentVariablesRoute } from '../../../../../../src/routes/applications/{uuid}/envs/bulk/PATCH.js';
 import { MockHttpClient, loadMockData, createTestUuid, assertValidationError } from '../../../../../utils/test-helpers.js';
 
 describe('CreateBulkApplicationEnvironmentVariablesRoute', () => {
@@ -19,8 +19,8 @@ describe('CreateBulkApplicationEnvironmentVariablesRoute', () => {
         it('should successfully create bulk environment variables', async () => {
             // Arrange
             const requestBody = mockData.validBulkEnvironmentVariables;
-            const expectedResponse = [mockData.validEnvironmentVariable, mockData.validEnvironmentVariable];
-            mockHttpClient.setMockResponse('POST', `/applications/${testUuid}/envs/bulk`, expectedResponse);
+            const expectedResponse = { message: 'Environment variables created successfully' };
+            mockHttpClient.setMockResponse('PATCH', `/applications/${testUuid}/envs/bulk`, expectedResponse);
 
             // Act
             const result = await route.execute({
@@ -29,11 +29,10 @@ describe('CreateBulkApplicationEnvironmentVariablesRoute', () => {
             });
 
             // Assert
-            expect(result.data).toEqual(expectedResponse);
-            expect(result.status).toBe(200);
+            expect(result.data.message).toEqual(expectedResponse.message);
 
             const lastRequest = mockHttpClient.getLastRequest();
-            expect(lastRequest.method).toBe('POST');
+            expect(lastRequest.method).toBe('PATCH');
             expect(lastRequest.path).toBe(`/applications/${testUuid}/envs/bulk`);
             expect(lastRequest.body).toEqual(requestBody);
         });
@@ -51,7 +50,7 @@ describe('CreateBulkApplicationEnvironmentVariablesRoute', () => {
                 });
                 expect.fail('Should have thrown validation error');
             } catch (error) {
-                assertValidationError(error, ['Must be a valid UUID format']);
+                assertValidationError(error, ['Must be a valid 24-character UUID format (lowercase letters and numbers only)']);
             }
         });
 
@@ -73,7 +72,7 @@ describe('CreateBulkApplicationEnvironmentVariablesRoute', () => {
 
         it('should validate environment variable key is not empty', async () => {
             // Arrange
-            const invalidRequest = [
+            const invalidRequest: any[] = [
                 {
                     key: '',
                     value: 'some-value'
@@ -94,7 +93,7 @@ describe('CreateBulkApplicationEnvironmentVariablesRoute', () => {
 
         it('should validate environment variable structure', async () => {
             // Arrange
-            const invalidRequest = [
+            const invalidRequest: any[] = [
                 {
                     // Missing key and value
                     is_preview: 'not-a-boolean'
@@ -131,8 +130,8 @@ describe('CreateBulkApplicationEnvironmentVariablesRoute', () => {
                     is_literal: true
                 }
             ];
-            const expectedResponse = [mockData.validEnvironmentVariable, mockData.validEnvironmentVariable];
-            mockHttpClient.setMockResponse('POST', `/applications/${testUuid}/envs/bulk`, expectedResponse);
+            const expectedResponse = { message: 'Environment variables created successfully' };
+            mockHttpClient.setMockResponse('PATCH', `/applications/${testUuid}/envs/bulk`, expectedResponse);
 
             // Act
             const result = await route.execute({
@@ -141,7 +140,7 @@ describe('CreateBulkApplicationEnvironmentVariablesRoute', () => {
             });
 
             // Assert
-            expect(result.data).toEqual(expectedResponse);
+            expect(result.data.message).toEqual(expectedResponse.message);
 
             const lastRequest = mockHttpClient.getLastRequest();
             expect(lastRequest.body).toEqual(requestBody);
@@ -149,15 +148,15 @@ describe('CreateBulkApplicationEnvironmentVariablesRoute', () => {
 
         it('should accept environment variables with default boolean values', async () => {
             // Arrange
-            const requestBody = [
+            const requestBody: any[] = [
                 {
                     key: 'SIMPLE_VAR',
                     value: 'simple-value'
                     // Boolean fields should default to false
                 }
             ];
-            const expectedResponse = [mockData.validEnvironmentVariable];
-            mockHttpClient.setMockResponse('POST', `/applications/${testUuid}/envs/bulk`, expectedResponse);
+            const expectedResponse = { message: 'Environment variables created successfully' };
+            mockHttpClient.setMockResponse('PATCH', `/applications/${testUuid}/envs/bulk`, expectedResponse);
 
             // Act
             const result = await route.execute({
@@ -166,12 +165,12 @@ describe('CreateBulkApplicationEnvironmentVariablesRoute', () => {
             });
 
             // Assert
-            expect(result.data).toEqual(expectedResponse);
+            expect(result.data.message).toEqual(expectedResponse.message);
         });
 
         it('should validate multiple environment variables', async () => {
             // Arrange
-            const requestBody = [
+            const requestBody: any[] = [
                 {
                     key: 'VALID_VAR',
                     value: 'valid-value'
